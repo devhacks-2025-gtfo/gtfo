@@ -1,16 +1,19 @@
-import { useState } from "react";
-import TestComponent from "./components/TestComponent.tsx";
+
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "../pages/Home";
+import Blank from "../pages/Blank";
 
 function App() {
-  const [count, setCount] = useState(0);
+   
 
-  return (
-    <>
-      <div>
-        <TestComponent />
-      </div>
-    </>
-  );
+    return (
+        <BrowserRouter>
+        <Routes>
+            <Route path="/" element={<Home/>} />
+            <Route path="/blank" element={<Blank/>} />
+        </Routes>
+        </BrowserRouter>
+    );
 }
 
 export default App;
