@@ -1,3 +1,11 @@
+import Clock from "../components/Clock";
+
 export default function Game() {
-  return <p>Game</p>;
+  const time = 0;
+  return (
+    <>
+      <p>Game</p>
+      <Clock time={time} />
+    </>
+  );
 }
