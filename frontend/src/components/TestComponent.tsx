@@ -1,9 +1,5 @@
 function TestComponent() {
-  return (
-    <>
-      <p>Hello from TestComponent!</p>
-    </>
-  );
+  return <p>Hello from TestComponent!</p>;
 }
 
 export default TestComponent;
