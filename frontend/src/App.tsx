@@ -1,17 +1,10 @@
-import { useState } from "react";
-import TestComponent from "./components/TestComponent.tsx";
-import { Theme, Flex, Text, Button } from "@radix-ui/themes";
+import { Theme } from "@radix-ui/themes";
+import StartPage from "./components/StartPage";
 
 function App() {
   return (
-    <Theme>
-      <div>
-        <TestComponent />
-        <Flex direction="column" gap="2">
-          <Text>Hello from Radix Themes :)</Text>
-          <Button>Let's go</Button>
-        </Flex>
-      </div>
+    <Theme accentColor="indigo">
+      <StartPage />
     </Theme>
   );
 }
