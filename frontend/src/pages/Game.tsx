@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import Clock from "../components/Clock";
+import ScoreCard from "../components/ScoreCard";
+import { Flex, Box, InputField } from "@radix-ui/themes";
 
 interface User {
     userId: string;
@@ -23,7 +26,7 @@ interface GameState {
 
 const socket = io("http://localhost:8000", { withCredentials: true });
 
-function Home() {
+export default function Game() {
     const [session, setSession] = useState<Session | null>(null);
     const [gameState, setGameState] = useState<GameState | null>(null);
     const [userId, setUserId] = useState<string>("");
@@ -91,6 +94,7 @@ function Home() {
             <h1>JWT WebSocket + Cookies</h1>
             {!session ? (
                 <>
+                    {/* this should go in Home.tsx */}
                     <input
                         type="text"
                         placeholder="Enter Username"
@@ -101,22 +105,18 @@ function Home() {
                 </>
             ) : (
                 <>
-                    <h2>Welcome, {session.userId}</h2>
-                    <div>
-                        {users && Object.keys(users)?.map((userId) => (
-                            <div key={userId}>{users[userId].userId}</div>
-                        ))}
-                    </div>
-                    <h3>Score: {JSON.stringify(gameState?.scores[session.userId])}</h3>
-                    <form onSubmit={sendFlag}>
-
-                        <input onChange={(e) => setFlag(e.target.value)} />
-                        <button type="submit">Submit</button>
-                    </form>
+                  <Flex justify="center" align="center">
+              {/* TODO: endTime is 0 on a fresh session */}
+              {/* TODO: sometimes the clock produces NaNs even when endTime is valid */}
+                    <Clock time={gameState?.endTime} />
+                  </Flex>
+                  <Flex justify="center" width="100vw" gap="9">
+                    <ScoreCard score={gameState?.scores[session.userId]} title="My Score" />
+                    <Box />
+                    {/*<ScoreCard score={0} title="Opponent's Score" /> removed until opponent score is in gameState */}
+                  </Flex>
                 </>
             )}
         </div>
     );
 }
-
-export default Home;

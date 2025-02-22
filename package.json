@@ -1,0 +1,19 @@
+{
+  "name": "gtfo",
+  "version": "1.0.0",
+  "description": ".devHacks 2025 Project",
+  "homepage": "https://github.com/devhacks-2025-gtfo/gtfo#readme",
+  "bugs": {
+    "url": "https://github.com/devhacks-2025-gtfo/gtfo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devhacks-2025-gtfo/gtfo.git"
+  },
+  "license": "MIT",
+  "author": ".devHacks 2025",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

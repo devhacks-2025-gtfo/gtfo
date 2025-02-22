@@ -105,6 +105,7 @@ io.on("connection", (socket: Socket) => {
   socket.on("start-game", () => {
     gameState.endTime = Date.now() + 60000;
     io.emit("game-started", gameState);
+    io.emit("update-game-state", gameState);
 
     for (let i = 0; i < 100; i++) {
       flags.push({

@@ -1,1 +1,12 @@
-@import "tailwindcss";
+.clock {
+  font-size: 12vw; /* Massive size, responsive to viewport width */
+  font-family: monospace;
+  font-weight: bold;
+  white-space: nowrap; /* Prevents wrapping */
+}
+
+.score-text {
+  font-family: monospace;
+  font-weight: bold;
+  font-size: 10vw;
+}
