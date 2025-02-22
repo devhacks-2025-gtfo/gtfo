@@ -75,24 +75,15 @@ app.get('/api/profile/:id', async (req: Request, res: Response): Promise<void> =
   }
 });
 
-app.post('/api/posts/:id/like', async (req: Request, res: Response): Promise<void> => {
-  const id = parseInt(req.params.id);
-  const post = posts.find(p => p.id === id);
-  
+app.post('/api/posts/:id/like', (req: Request, res: Response): void => {
+  const postId = parseInt(req.params.id);
+  const post = posts.find(p => p.id === postId);
   if (post) {
-    post.likes++;
-    // Check if the request came from our site (CSRF check)
-    const referer = req.headers.referer;
-    if (!referer || !referer.includes('localhost:4000')) {
-      const flag = await gameGenerator.fetchFlag('csrf-like-1');
-      res.json({
-        success: true,
-        message: 'CSRF successful!',
-        flag
-      });
-    } else {
-      res.json({ success: false });
+    if (!post.likes) {
+      post.likes = 0;
     }
+    post.likes++;
+    res.json({ success: true, message: 'Post liked successfully', likes: post.likes });
   } else {
     res.status(404).json({ error: 'Post not found' });
   }

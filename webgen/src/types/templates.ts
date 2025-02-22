@@ -30,7 +30,6 @@ export interface Challenge {
   points: number;
   component?: FC;
   solution: string;
-  flag?: string;
 }
 
 export interface GameTemplate {
