@@ -1,19 +1,19 @@
-
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "../pages/Home";
-import Blank from "../pages/Blank";
+import { Theme } from "@radix-ui/themes";
+import Home from "./pages/Home";
+import Game from "./pages/Game";
+import { useState } from "react";
 
 function App() {
-   
-
-    return (
-        <BrowserRouter>
-        <Routes>
-            <Route path="/" element={<Home/>} />
-            <Route path="/blank" element={<Blank/>} />
-        </Routes>
-        </BrowserRouter>
-    );
+  const [connected, setConnected] = useState<boolean>(false);
+  return (
+    <Theme accentColor="indigo">
+      {connected ? (
+        <Game />
+      ) : (
+        <Home connected={connected} setConnected={setConnected} />
+      )}
+    </Theme>
+  );
 }
 
 export default App;
