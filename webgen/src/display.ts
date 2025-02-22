@@ -23,7 +23,7 @@ const posts = [
 ];
 
 // API Routes
-app.post('/api/login', (req: Request, res: Response): void => {
+app.post('/api/login', async (req: Request, res: Response): Promise<void> => {
   const { username, password } = req.body;
   // Intentionally vulnerable to SQL injection
   const query = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
@@ -31,44 +31,51 @@ app.post('/api/login', (req: Request, res: Response): void => {
   
   // Simulate SQL injection vulnerability
   if (username.includes("'")) {
-    res.json({ message: 'Login successful! Flag: flag{sql_injection_auth_bypass_2025}' });
+    const flag = await gameGenerator.fetchFlag('auth-bypass-1');
+    res.json({ success: true, message: 'SQL injection successful!', flag });
   } else {
     const user = users.find(u => u.username === username && u.password === password);
-    res.json({ message: user ? 'Login successful!' : 'Invalid credentials' });
+    res.json({ success: false, message: user ? 'Login successful!' : 'Invalid credentials' });
   }
 });
 
-app.post('/api/search', (req: Request, res: Response): void => {
+app.post('/api/search', async (req: Request, res: Response): Promise<void> => {
   const { query } = req.body;
   // Intentionally vulnerable to XSS
   const results = `<div>Search results for: ${query}</div>`;
   if (query.toLowerCase().includes('<script>')) {
+    const flag = await gameGenerator.fetchFlag('xss-search-1');
     res.json({ 
       results,
-      message: 'XSS successful! Flag: flag{xss_in_search_2025}'
+      success: true,
+      message: 'XSS successful!',
+      flag
     });
   } else {
-    res.json({ results });
+    res.json({ results, success: false });
   }
 });
 
-app.get('/api/profile/:id', (req: Request, res: Response): void => {
+app.get('/api/profile/:id', async (req: Request, res: Response): Promise<void> => {
   const id = parseInt(req.params.id);
   const user = users.find(u => u.id === id);
   
   if (id === 0) {
+    const flag = await gameGenerator.fetchFlag('idor-profile-1');
     res.json({
       ...user,
-      message: 'IDOR successful! Flag: flag{idor_admin_profile_2025}'
+      success: true,
+      message: 'IDOR successful!',
+      flag
     });
   } else if (user) {
-    res.json(user);
+    res.json({ ...user, success: false });
   } else {
     res.status(404).json({ error: 'User not found' });
   }
 });
 
-app.post('/api/posts/:id/like', (req: Request, res: Response): void => {
+app.post('/api/posts/:id/like', async (req: Request, res: Response): Promise<void> => {
   const id = parseInt(req.params.id);
   const post = posts.find(p => p.id === id);
   
@@ -77,12 +84,14 @@ app.post('/api/posts/:id/like', (req: Request, res: Response): void => {
     // Check if the request came from our site (CSRF check)
     const referer = req.headers.referer;
     if (!referer || !referer.includes('localhost:4000')) {
+      const flag = await gameGenerator.fetchFlag('csrf-like-1');
       res.json({
         success: true,
-        message: 'CSRF successful! Flag: flag{csrf_like_button_2025}'
+        message: 'CSRF successful!',
+        flag
       });
     } else {
-      res.json({ success: true });
+      res.json({ success: false });
     }
   } else {
     res.status(404).json({ error: 'Post not found' });
@@ -105,9 +114,9 @@ app.get('/api/generate', (req: Request, res: Response): void => {
 });
 
 // Generate a new game with random template and challenges
-app.get('/api/new-game', (_req: Request, res: Response): void => {
+app.get('/api/new-game', async (_req: Request, res: Response): Promise<void> => {
   try {
-    const game = gameGenerator.generateGame();
+    const game = await gameGenerator.generateGame();
     res.json(game);
   } catch (error) {
     console.error('Error generating game:', error);
@@ -123,18 +132,6 @@ app.get('/api/current-game', (_req: Request, res: Response): void => {
     return;
   }
   res.json(game);
-});
-
-// Validate a flag submission
-app.post('/api/validate-flag', (req: Request, res: Response): void => {
-  const { challengeId, flag } = req.body;
-  if (!challengeId || !flag) {
-    res.status(400).json({ error: 'Missing challengeId or flag' });
-    return;
-  }
-
-  const isValid = gameGenerator.validateFlag(challengeId, flag);
-  res.json({ success: isValid });
 });
 
 // Serve index.html for all other routes to support React routing

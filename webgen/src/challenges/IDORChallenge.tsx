@@ -62,8 +62,7 @@ const IDORChallenge: Challenge = {
   difficulty: 'medium',
   points: 150,
   component: ProfileComponent,
-  solution: "Change the user ID to 0 to access the hidden admin profile",
-  flag: "flag{idor_admin_profile_2025}"
+  solution: "Change the user ID to 0 to access the hidden admin profile"
 };
 
 export default IDORChallenge; 

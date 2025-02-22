@@ -10,7 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@esbuild/linux-x64": "^0.25.0",
     "@radix-ui/themes": "^3.2.0",
+    "@rollup/rollup-linux-x64-gnu": "^4.34.8",
+    "@swc/core-linux-x64-gnu": "^1.10.18",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-toastify": "^11.0.3",

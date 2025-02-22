@@ -50,8 +50,7 @@ const XSSChallenge: Challenge = {
   difficulty: 'easy',
   points: 100,
   component: SearchComponent,
-  solution: "Enter a payload like: <script>alert('XSS')</script>",
-  flag: "flag{xss_in_search_2025}"
+  solution: "Enter a payload like: <script>alert('XSS')</script>"
 };
 
 export default XSSChallenge; 

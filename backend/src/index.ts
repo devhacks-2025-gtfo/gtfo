@@ -132,7 +132,7 @@ io.on("connection", (socket: Socket) => {
       console.log(gameState)
       io.emit("update-game-state", gameState);
 
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 4; i++) {
         flags.push({
           flag: uuidv4().toString(),
           isVerified: false
