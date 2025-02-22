@@ -14,43 +14,66 @@ A real-time competitive black box pentesting platform built for .devHacks 2025. 
 
 ## 🏗️ Architecture
 
-The application is split into four main components:
+The application is split into three main components:
 
 - **Backend (8000)**: Node.js/TypeScript server handling game logic and WebSocket
 - **Frontend (5173)**: React/TypeScript client for game interface
-- **Web Deploy (3000)**: Next.js application serving dynamic challenges
-- **Webgen (4000)**: Challenge generation and selection system
+- **Webgen (4000)**: Challenge generation and template system
 
 ## 🚀 Quick Start
 
-1. Clone the repository:
+1. **Prerequisites**
+   - Node.js (v20.18.0 or higher)
+   - npm (latest version)
+   - Git
 
-```bash
-git clone https://github.com/devhacks-2025-gtfo/gtfo.git
-cd gtfo
-```
+2. **Clone and Setup**
+   ```bash
+   # Clone the repository
+   git clone https://github.com/devhacks-2025-gtfo/gtfo.git
+   cd gtfo
 
-2. Install dependencies for all components (see [setup guide](docs/setup/getting-started.md))
+   # Install dependencies for all components
+   cd backend && npm install
+   cd ../frontend && npm install
+   cd ../webgen && npm install
+   ```
 
-3. Start the development servers:
+3. **Environment Setup**
+   ```bash
+   # backend/.env
+   PORT=8000
+   NODE_ENV=development
+   JWT_SECRET=your_jwt_secret
 
-```bash
-# Terminal 1 - Backend
-cd backend
-npm run dev
+   # frontend/.env
+   VITE_API_URL=http://localhost:8000
+   VITE_WEBGEN_URL=http://localhost:4000
 
-# Terminal 2 - Frontend
-cd frontend
-npm run dev 
+   # webgen/.env
+   PORT=4000
+   BACKEND_URL=http://localhost:8000
+   ```
 
-# Terminal 3 - Web Deploy
-cd web-deploy
-npm run dev
+4. **Start Development Servers**
+   ```bash
+   # Terminal 1 - Backend
+   cd backend
+   npm run dev
 
-# Terminal 4 - Webgen
-cd webgen
-node display.js
-```
+   # Terminal 2 - Frontend
+   cd frontend
+   npm run dev
+
+   # Terminal 3 - Webgen
+   cd webgen
+   npm run build && npm start
+   ```
+
+5. **Access the Application**
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:8000
+   - Webgen: http://localhost:4000
 
 ## 📚 Documentation
 
@@ -61,10 +84,26 @@ node display.js
 
 ## 🛠️ Tech Stack
 
-- **Backend**: Node.js, Express, Socket.IO, TypeScript
-- **Frontend**: React, Vite, TypeScript, Radix UI
-- **Web Deploy**: Next.js, SQLite
-- **Webgen**: Express, Node.js
+### Backend
+- Node.js with Express
+- Socket.IO for real-time
+- TypeScript
+- JWT authentication
+- Redis for sessions
+
+### Frontend
+- React with Vite
+- TypeScript
+- Radix UI components
+- Socket.IO client
+- TailwindCSS
+
+### Webgen
+- Express.js
+- React components
+- TypeScript
+- Webpack
+- Template system
 
 ## 📄 License
 
