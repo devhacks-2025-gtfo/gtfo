@@ -1,19 +1,14 @@
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "../pages/Home";
-import Blank from "../pages/Blank";
+import Game from "./pages/Game";
 
 function App() {
-   
-
-    return (
-        <BrowserRouter>
-        <Routes>
-            <Route path="/" element={<Home/>} />
-            <Route path="/blank" element={<Blank/>} />
-        </Routes>
-        </BrowserRouter>
-    );
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Game />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
