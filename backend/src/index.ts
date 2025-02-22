@@ -128,7 +128,7 @@ io.on("connection", (socket: Socket) => {
     console.log(gameState.ready)
     if (gameState.ready.length == 2) {
       console.log("game started")
-      gameState.endTime = Date.now() + 10000;
+      gameState.endTime = Date.now() + 300000;
       gameState.isGameStarted = true;
       // io.emit("game-started", gameState);
       console.log(gameState)
