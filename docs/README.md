@@ -10,7 +10,6 @@ Welcome to the GTFO (Get The Flag with Opponents) documentation. This documentat
 4. [Components](components/)
    - [Backend](components/backend.md)
    - [Frontend](components/frontend.md)
-   - [Web Deploy](components/web-deploy.md)
    - [Webgen](components/webgen.md)
 5. [API Reference](api/endpoints.md)
 
