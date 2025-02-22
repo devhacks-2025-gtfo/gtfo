@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowJs": true,
+    "isolatedModules": true
+  },
+  "include": [
+    "src/client/**/*",
+    "src/challenges/**/*",
+    "src/templates/**/*",
+    "src/types/**/*"
+  ]
+} 
