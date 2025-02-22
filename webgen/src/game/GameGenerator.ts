@@ -29,7 +29,7 @@ export class GameGenerator {
     ['auth-bypass-1', 0],
     ['xss-search-1', 1],
     ['idor-profile-1', 2],
-    ['csrf-like-1', 2] // Using index 2 as backup since backend only generates 3 flags
+    ['csrf-like-1', 3]
   ]);
 
   private constructor() {
