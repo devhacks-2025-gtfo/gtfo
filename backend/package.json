@@ -15,7 +15,8 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@tsconfig/node-lts": "^22.0.1",

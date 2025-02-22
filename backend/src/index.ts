@@ -6,9 +6,11 @@ import { Server, Socket } from "socket.io";
 import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
 import cors from "cors";
+import { v4 as uuidv4 } from 'uuid';
+
 
 interface User {
-  username: string;
+  userId: string;
   score: number;
 }
 
@@ -16,6 +18,11 @@ interface JwtPayload {
   userId: string;
   username: string;
 }
+interface Flag {
+  flag: string;
+  isVerified: boolean;
+}
+
 
 type Sessions = Record<string, User>;
 type Users = Record<string, User>;
@@ -34,21 +41,25 @@ const io = new Server(server, {
 
 const users: Users = {};
 const sessions: Sessions = {};
+const socketIds: any = {};
+const gameState: any = {
+  scores: {},
+  endTime: 0
+}
+
 const JWT_SECRET = process.env.JWT_SECRET as string || "51760344b6553a01fd2ea990f36a81d0c26c0a464998fd8dcbe7f70db88add23";
 
 // 🎯 **User Login Endpoint (Issues JWT in Cookie)**
 app.post("/login", (req: any, res: any) => {
-  const { username } = req.body;
+  const { userId } = req.body;
 
-  if (!username) return res.status(400).json({ error: "Username is required" });
 
-  const userId = `user_${Math.floor(Math.random() * 10000)}`;
-  const token = jwt.sign({ userId, username }, JWT_SECRET, { expiresIn: "1h" });
+  const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: "1h" });
 
   res.cookie("token", token, { httpOnly: true, sameSite: "Strict" });
-  users[userId] = { username, score: 0 };
-
-  res.json({ message: "Login successful", username, users });
+  users[userId] = { userId, score: 0 };
+  gameState.scores[userId] = 0;
+  res.json({ message: "Login successful", userId, gameState });
 });
 
 // 🎯 **JWT Middleware for WebSocket Authentication**
@@ -66,44 +77,84 @@ io.use((socket: Socket, next) => {
     next();
   });
 });
+const flags: Flag[] = []
+
 
 // 🎯 **WebSocket Connection Handling**
 io.on("connection", (socket: Socket) => {
-  const { userId, username } = socket.data.user as JwtPayload;
-  console.log(socket.data.user)
-  console.log(`${userId} connected as ${username}`);
+  const { userId, } = socket.data.user as JwtPayload;
+
+  socketIds[userId] = socket.id;
+  console.log(`${userId} connected`);
 
   if (!sessions[userId]) {
-    sessions[userId] = { username, score: 0 };
+    sessions[userId] = { userId, score: 0 };
   }
 
   socket.emit("restore-session", {
     session: sessions[userId],
-    users,
+    gameState,
   });
 
-  socket.on("new-user-logged-in", (data: { username: string }) => {
-    console.log("New user logged in:", data.username);
-    io.emit("restore-session", {
-      session: sessions[userId],
-      users,
-    });
+  socket.on("new-user-logged-in", (data: { userId: string }) => {
+    console.log("New user logged in:", data.userId);
+    io.emit("update-game-state", gameState);
   });
 
 
+  socket.on("start-game", () => {
+    gameState.endTime = Date.now() + 60000;
+    io.emit("game-started", gameState);
 
-  socket.on("update-score", (newScore: number) => {
-    if (sessions[userId]) {
-      console.log(`${userId} is available`);
-      sessions[userId].score = newScore;
-      socket.emit("score-updated", newScore);
-    } else {
-      console.log(`${userId} is not available`);
+    for (let i = 0; i < 100; i++) {
+      flags.push({
+        flag: uuidv4().toString(),
+        isVerified: false
+      });
     }
-  });
+    console.log(flags)
+  })
+  socket.on("send-flag", (playerObj) => {
+    const { userId, flag } = playerObj;
+    // console.log(flags)
+
+    const index = flags.findIndex((f) => f.flag === flag);
+    console.log(index)
+    if (index != -1) {
+      if (flags[index].isVerified) {
+        io.emit("send-result", {
+          userId,
+          isCorrect: false,
+          message: "Flag already verified",
+          gameState
+        })
+      } else {
+        gameState.scores[userId] = (gameState.scores[userId] || 0) + 1;
+        io.emit("send-result", {
+          userId,
+          isCorrect: true,
+          message: "Correct Flag!",
+          gameState
+        })
+
+        flags[index].isVerified = true;
+      }
+    } else {  
+      io.emit("send-result", {
+        userId,
+        isCorrect: false,
+        message: "Incorrect Flag!",
+        gameState
+      })
+    }
+    console.log(gameState)
+
+
+  })
+
 
   socket.on("disconnect", () => {
-    console.log(`User ${username} (${userId}) disconnected`);
+    console.log(`User ${userId} disconnected`);
   });
 });
 
