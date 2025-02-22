@@ -7,8 +7,6 @@ function App() {
   const [connected, setConnected] = useState<boolean>(false);
   return (
     <Theme accentColor="indigo">
-     
-
       <Game/>
     </Theme>
   );
