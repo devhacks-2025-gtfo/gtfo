@@ -1,17 +1,17 @@
 import { Theme } from "@radix-ui/themes";
 import Home from "./pages/Home";
 import Game from "./pages/Game";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from "react";
 
 function App() {
+  const [connected, setConnected] = useState<boolean>(false);
   return (
     <Theme accentColor="indigo">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/game" element={<Game />} />
-        </Routes>
-      </BrowserRouter>
+      {connected ? (
+        <Game />
+      ) : (
+        <Home connected={connected} setConnected={setConnected} />
+      )}
     </Theme>
   );
 }
