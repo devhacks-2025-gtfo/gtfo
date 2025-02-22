@@ -7,11 +7,9 @@ function App() {
   const [connected, setConnected] = useState<boolean>(false);
   return (
     <Theme accentColor="indigo">
-      {connected ? (
-        <Game />
-      ) : (
-        <Home connected={connected} setConnected={setConnected} />
-      )}
+     
+
+      <Game/>
     </Theme>
   );
 }
