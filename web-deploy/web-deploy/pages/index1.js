@@ -1,5 +1,9 @@
 import { useState } from 'react';
 
+
+// how to solve: in id, 
+// put admin' -- 
+// and password, put anything
 export default function Home() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
