@@ -44,7 +44,9 @@ const sessions: Sessions = {};
 const socketIds: any = {};
 const gameState: any = {
   scores: {},
-  endTime: 0
+  endTime: 0,
+  isGameStarted: false,
+  ready: []
 }
 
 const JWT_SECRET = process.env.JWT_SECRET as string || "51760344b6553a01fd2ea990f36a81d0c26c0a464998fd8dcbe7f70db88add23";
@@ -63,7 +65,7 @@ app.post("/login", (req: any, res: any) => {
 });
 
 app.post("/api/flag", (req: any, res: any) => {
-  const { id } = req.body;    
+  const { id } = req.body;
 
   res.json({ flag: flags[id] });
 })
@@ -109,37 +111,55 @@ io.on("connection", (socket: Socket) => {
   });
 
 
-  socket.on("start-game", () => {
-    gameState.endTime = Date.now() + 60000;
-    io.emit("game-started", gameState);
+  socket.on("restart-game", () => {
+    gameState.scores = Object.keys(gameState.scores).reduce((acc: Record<string, number>, key: string) => {
+      acc[key] = 0;
+      return acc;
+    }, {});
+    gameState.isGameStarted = false;
+    gameState.ready = [];
+    gameState.endTime = 0;
     io.emit("update-game-state", gameState);
+  })
+  socket.on("ready-signal", (dummy) => {
+    gameState.ready.push(userId);
+    console.log(gameState.ready)
+    if (gameState.ready.length == 2) {
+      console.log("game started")
+      gameState.endTime = Date.now() + 10000;
+      gameState.isGameStarted = true;
+      // io.emit("game-started", gameState);
+      console.log(gameState)
+      io.emit("update-game-state", gameState);
 
-    for (let i = 0; i < 100; i++) {
-      flags.push({
-        flag: uuidv4().toString(),
-        isVerified: false
-      });
+      for (let i = 0; i < 10; i++) {
+        flags.push({
+          flag: uuidv4().toString(),
+          isVerified: false
+        });
+      }
+      console.log(flags)
     }
-    console.log(flags)
+
   })
   socket.on("send-flag", (playerObj) => {
-    const { userId, flag } = playerObj;
+    const { senderId, flag } = playerObj;
     // console.log(flags)
-
+    console.log(playerObj)
     const index = flags.findIndex((f) => f.flag === flag);
     console.log(index)
     if (index != -1) {
       if (flags[index].isVerified) {
         io.emit("send-result", {
-          userId,
+          senderId,
           isCorrect: false,
           message: "Flag already verified",
           gameState
         })
       } else {
-        gameState.scores[userId] = (gameState.scores[userId] || 0) + 1;
+        gameState.scores[senderId] = (gameState.scores[senderId] || 0) + 1;
         io.emit("send-result", {
-          userId,
+          senderId,
           isCorrect: true,
           message: "Correct Flag!",
           gameState
@@ -147,15 +167,15 @@ io.on("connection", (socket: Socket) => {
 
         flags[index].isVerified = true;
       }
-    } else {  
+    } else {
       io.emit("send-result", {
-        userId,
+        senderId,
         isCorrect: false,
         message: "Incorrect Flag!",
         gameState
       })
     }
-    console.log(gameState)
+    // console.log(gameState)
 
 
   })
