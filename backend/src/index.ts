@@ -122,7 +122,9 @@ io.on("connection", (socket: Socket) => {
     io.emit("update-game-state", gameState);
   })
   socket.on("ready-signal", (dummy) => {
-    gameState.ready.push(userId);
+    const alreadyExisted = gameState.ready.includes(userId);
+
+    if(!alreadyExisted) gameState.ready.push(userId);
     console.log(gameState.ready)
     if (gameState.ready.length == 2) {
       console.log("game started")
