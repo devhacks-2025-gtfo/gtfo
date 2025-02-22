@@ -41,13 +41,17 @@ export default function Clock({
 
   const displayTime: string = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 
+  const lowOnTime = () => {
+    return (minutes === 0) && (seconds % 2 === 0);
+  }
+
   return (
     <>
       <Box
         px="8"
         style={{
           border: "3px var(--gray-10) solid",
-          background: "var(--gray-6)",
+          background: lowOnTime() ? "red" : "var(--gray-6)",
           borderRadius: "15px",
         }}
       >

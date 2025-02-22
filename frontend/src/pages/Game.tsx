@@ -163,8 +163,8 @@ export default function Game() {
             <Home connected={isConnected} setConnected={setIsConnected} />
           ) : (
             <>
-              <h1>JWT WebSocket + Cookies</h1>
-              <Button onClick={startGame}>Ready</Button>
+              <h1>Click to Start</h1>
+              <Button size="3" onClick={startGame}>Ready</Button>
               {session && gameState?.ready.includes(session?.userId) && (
                 <span>Waiting for other players...</span>
               )}
