@@ -62,6 +62,13 @@ app.post("/login", (req: any, res: any) => {
   res.json({ message: "Login successful", userId, gameState });
 });
 
+app.post("/api/flag", (req: any, res: any) => {
+  const { id } = req.body;    
+
+  res.json({ flag: flags[id] });
+})
+
+
 // 🎯 **JWT Middleware for WebSocket Authentication**
 io.use((socket: Socket, next) => {
   const cookieHeader = socket.handshake.headers.cookie;
