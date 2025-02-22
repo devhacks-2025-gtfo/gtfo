@@ -77,8 +77,7 @@ const CSRFChallenge: Challenge = {
   solution: `Create an HTML form that automatically submits:
 <form action="/api/posts/1/like" method="POST">
   <input type="submit" value="Click me!">
-</form>`,
-  flag: "flag{csrf_like_button_2025}"
+</form>`
 };
 
 export default CSRFChallenge; 

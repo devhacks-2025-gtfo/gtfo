@@ -24,6 +24,13 @@ const challenges: Challenge[] = [
 export class GameGenerator {
   private static instance: GameGenerator;
   private currentTemplate?: GameTemplate;
+  private challengeFlags: Map<string, string> = new Map();
+  private challengeIndices: Map<string, number> = new Map([
+    ['auth-bypass-1', 0],
+    ['xss-search-1', 1],
+    ['idor-profile-1', 2],
+    ['csrf-like-1', 2] // Using index 2 as backup since backend only generates 3 flags
+  ]);
 
   private constructor() {
     // Log available challenges for debugging
@@ -41,17 +48,50 @@ export class GameGenerator {
     return GameGenerator.instance;
   }
 
+  public async fetchFlag(challengeId: string): Promise<string | undefined> {
+    try {
+      const flagIndex = this.challengeIndices.get(challengeId);
+      if (flagIndex === undefined) {
+        console.warn(`No flag index mapping for challenge ${challengeId}`);
+        return undefined;
+      }
+
+      const response = await fetch('http://localhost:8000/api/flag', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: flagIndex }),
+      });
+      
+      if (!response.ok) {
+        console.warn(`Failed to fetch flag for challenge ${challengeId}`);
+        return undefined;
+      }
+
+      const data = await response.json();
+      if (!data.flag) {
+        console.warn(`No flag returned for challenge ${challengeId}`);
+        return undefined;
+      }
+      return data.flag.flag; // Backend returns { flag: { flag: string, isVerified: boolean } }
+    } catch (error) {
+      console.error(`Error fetching flag for challenge ${challengeId}:`, error);
+      return undefined;
+    }
+  }
+
   private serializeChallenge(challenge: Challenge) {
-    const { component, ...rest } = challenge;
+    const { component, flag, ...rest } = challenge;
     return rest;
   }
 
-  public generateGame(): GameTemplate {
+  public async generateGame(): Promise<GameTemplate> {
     // Select a random template
     const template = templates[Math.floor(Math.random() * templates.length)];
     
     // For each challenge slot in the template, find a suitable challenge
-    const selectedChallenges = template.challengeSlots.map(slot => {
+    const selectedChallenges = await Promise.all(template.challengeSlots.map(async slot => {
       const compatibleChallenges = challenges.filter(challenge => 
         slot.allowedTypes.includes(challenge.type)
       );
@@ -72,9 +112,15 @@ export class GameGenerator {
         type: selectedChallenge.type,
         name: selectedChallenge.name
       });
+
+      // Fetch and store the flag
+      const flag = await this.fetchFlag(selectedChallenge.id);
+      if (flag) {
+        this.challengeFlags.set(selectedChallenge.id, flag);
+      }
       
       return this.serializeChallenge(selectedChallenge);
-    });
+    }));
 
     const game: GameTemplate = {
       template,
@@ -100,13 +146,6 @@ export class GameGenerator {
 
   public getCurrentGame(): GameTemplate | undefined {
     return this.currentTemplate;
-  }
-
-  public validateFlag(challengeId: string, submittedFlag: string): boolean {
-    if (!this.currentTemplate) return false;
-
-    const challenge = this.currentTemplate.challenges.find(c => c?.id === challengeId);
-    return challenge?.flag === submittedFlag;
   }
 
   public getChallengeByType(type: ChallengeType): Challenge[] {

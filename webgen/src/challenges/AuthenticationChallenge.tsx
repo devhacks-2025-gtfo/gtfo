@@ -57,8 +57,7 @@ const AuthenticationChallenge: Challenge = {
   difficulty: 'easy',
   points: 100,
   component: LoginComponent,
-  solution: "Use SQL injection with username: admin' -- and any password",
-  flag: "flag{sql_injection_auth_bypass_2025}"
+  solution: "Use SQL injection with username: admin' -- and any password"
 };
 
 export default AuthenticationChallenge; 
